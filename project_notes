@@ -1,0 +1,36 @@
+Requirements
+-------------
+1) An introduction with a statement of the problem you are addressing and a summary of your conclusions
+2) Discussion of your exploration of the dataset supported by charts and summary statistics.
+Examine several aspects of the dataset. Explain which aspects are important and why?
+3) An explanation of your choice of models and discuss the model results using text, charts and tables.
+Models should be within the scope of the course. You may use any of R, Python and Azure Machine Learning for you analysis.
+
+Question
+--------
+Data Scientist, sexiest job of the 21st century, says Harvard Business Review. Python and R are the primary programming languages used by
+academia. Most wanna be data scientists spend hours trying to hone their skills in R and Python. But is there more to it. Are there any other
+technical skill that is being sought by various employers?
+  Dice.com makes available an API, using which 'data scientist' key words were used to search the job portal, it returned about 30K jobs.
+The site was scrapped using Python and the data analyzed. 
+
+Can jobs out there be clustered? Is there an inherent pattern to these jobs?
+
+Finally, 30K jobs out there. Can one come up with a simple approach to find most relevant job given the skills one has.
+
+
+1. Split the location column into two separate columns - city and state.
+2. Travel requirement of the job ranged from no telecommuting to 100% WFH. This was grouped into
+'Office', 'WFH', 'Office with 100% travel','Office with some travel', '', 'WFH with some travel',
+       'WFH with 100% travel'
+3. Jobs were also grouped into Full time and contract.
+4. Each job had skills comma separated, this was converted to multiple rows, with one skill per row for a job
+The dataset was further cleaned to remove skills which were more than two words to handle bad data.
+Due to large number of skills about 22K unique skills, only skills that show up on at least 50 job listings was retained.
+This reduced the number of skills to ~400
+5. Skills were pivoted from rows to columns, this will ensure one row per job listing.
+6. clustered jobs on skills only, used the elbow method to find the optimum number of clusters in the data. It was determined to be
+10 clusters.
+Bibliography - https://www.packtpub.com/books/content/clustering-k-means
+11. 1 major cluster rest are all grouped to 1000 jobs.
+12. visualization - http://www.apnorton.com/blog/2016/12/19/Visualizing-Multidimensional-Data-in-Python/

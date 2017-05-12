@@ -1,0 +1,324 @@
+Data Cleansing module
+
+#important magic command
+%matplotlib inline
+
+Univariate plot types
+---------------------
+
+count = df['field'].value_counts()
+
+barplot
+--------
+count.plot.bar(ax=ax)
+ax.set_title('')
+
+pairplot
+--------
+import seaborn as sns
+num_cols = ["length", "curb-weight", "engine-size", "horsepower", "city-mpg", "price", "fuel-type"]
+sns.pairplot(auto_price[num_cols], size=2)
+
+histogram
+-------
+df['field'].plot.hist(ax=ax)
+df[['field1','field2']].boxplot(by='field1')
+
+
+conditional Histogram
+----------------------
+## Function to plot conditioned histograms
+def cond_hists(df, plot_cols, grid_col):
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+    ## Loop over the list of columns
+    for col in plot_cols:
+        grid1 = sns.FacetGrid(df, col=grid_col)
+        grid1.map(plt.hist, col, alpha=.7)
+    return grid_col
+
+## Define columns for making a conditioned histogram
+plot_cols2 = ["length",
+               "curb-weight",
+               "engine-size",
+               "city-mpg",
+               "price"]
+
+cond_hists(auto_price, plot_cols2, 'drive-wheels')
+
+
+Box Plots
+----------
+## Create boxplots of data
+def auto_boxplot(df, plot_cols, by):
+    import matplotlib.pyplot as plt
+    for col in plot_cols:
+        fig = plt.figure(figsize=(9, 6))
+        ax = fig.gca()
+        df.boxplot(column = col, by = by, ax = ax)
+        ax.set_title('Box plots of ' + col + ' by ' + by)
+        ax.set_ylabel(col)
+    return by
+
+auto_boxplot(auto_price, plot_cols2, "drive-wheels")
+
+
+Scatter Plot
+-------------
+## Create scatter plot
+def auto_scatter(df, plot_cols):
+    import matplotlib.pyplot as plt
+    for col in plot_cols:
+        fig = plt.figure(figsize=(8, 8))
+        ax = fig.gca()
+        temp1 = df.ix[df['fuel-type'] == 'gas']
+        temp2 = df.ix[df['fuel-type'] == 'diesel']
+        if temp1.shape[0] > 0:
+            temp1.plot(kind = 'scatter', x = col, y = 'price' ,
+                           ax = ax, color = 'DarkBlue')
+        if temp2.shape[0] > 0:
+            temp2.plot(kind = 'scatter', x = col, y = 'price' ,
+                           ax = ax, color = 'Red')
+        ax.set_title('Scatter plot of price vs. ' + col)
+    return plot_cols
+
+## Define columns for making scatter plots
+plot_cols3 = ["length",
+               "curb-weight",
+               "engine-size",
+               "city-mpg"]
+
+auto_scatter(auto_price, plot_cols3)
+
+
+Conditional Scatter
+-----------------------
+def cond_plot(cols):
+    import IPython.html.widgets
+    import seaborn as sns
+    for col in cols:
+        g = sns.FacetGrid(auto_price, col="num-cylinders", row = 'body-style',
+                      hue="fuel-type", palette="Set2", margin_titles=True)
+        g.map(sns.regplot, col, "price", fit_reg = False)
+#        g.map(sns.regplot, "engine-size", "price", fit_reg = False)
+cond_plot(plot_cols3)
+
+
+Bar plot for categorical features/box plot numeric
+
+Kde Plot
+----------
+
+sns.kdeplot(df['field1'])
+
+2d kde plot
+scatter plot
+
+aesthetics
+----------
+color, transparency, size and shape
+sns.lmplot()
+
+df.drop([],axis=1) to drop columns
+
+df.sort_values(by=[],axis=0)
+
+
+apply - aggregates, map - only on series, applymap - each element of columns in row
+
+
+joining data sets
+------------------
+
+'import data' module to get outside data
+'join' module to join data
+'Edit Metadata' - convert string to categorical, always
+'Select Columns'
+'Group categorical values' - combined categories into few groups
+'convert to indicator values' - make dummies
+--make continuous data ordinal/categorical
+
+Data Cleansing
+--------------
+1. Missing and Repeated values
+Missing strategies mainly remove column, substitute mean etc
+repeated - look for all values or if key column exists may be eliminate based on it
+
+'Clean missing data' module
+'Remove duplicate rows' module
+
+feature engineering
+-------
+'apply math operation'
+
+outliers and errors
+------------------
+Scatter Plot/ Histograms
+'Clip Values' Module - Clippeaks->constant, followed by 'clean missing data'
+
+scaling
+-------
+z-score
+min-max - carful with outliers
+'normalize' module
+sklearn.preprocessing.scale()
+
+
+Classification
+--------------
+It is all about creating decision boundary.
+1.logistic regression - 'Two Class Logisitc'
+2.decision trees
+3.adaboost(boosted decision trees) -'Boosted Decision Tree'
+5.random forest - ensemble - 'Decision Forest'
+4.SVM - 'Two class locally deep support vector machines'
+6.neural network - 'Two class neural net'
+
+Ockham's razor - best model is simple model that fits data well
+curse of dimensionality - wide-short data sets,
+
+machine learning - minimize loss, keep it simple (Regularization)
+
+Evaluation
+----------
+True positive, True negative, false positive, false negative
+
+confusion matrix
+predicted going down, actual going across
+TP        FP(Type1)
+FN(Type2) TN
+
+Accuracy = TP+TN/n
+1.classification error = FP + FN / n
+2. True positive Rate/Sensitivity/Recall = TP/no of Positives
+3. True Negative Rate/Specificity = TN/no of Negatives
+4. Precision = TP/no of Predicted Positives
+5. F1 Score = Balance between precision and recall = 2* Precision * Recall / Precision + Recall
+6. ROC Curves
+For a particular False Positive Rate, what is the True Positive Rate. Generated by moving the decision boundary (0 to 1)
+x-axis - FPR = FP/no of Negatives
+y-axis - TPR=Recall=TP/no of Positives
+
+AUC = area under ROC curve
+
+1. 'Clean Missing Data' may have to be used twice one for numeric substitute with 0 and one for String, substitute with 'unknown'
+2. 'Python script' may need to be used for grouping high dimension fields etc
+3. Normalize numeric (may not be all numeric)
+4. Convert string to 'categorical' using 'Edit Metadata'
+5. Visualize data to see if there are any clear separators - think of KDE plots
+6. Split Data -> train data <- ML model -> Score model -> Evaluate model -> Visualize the result from Score
+
+
+Imbalanced data
+---------------
+Increase weight for positive outcome, 'C' works great for logistic and SVM.
+use python to replicate rows for minority labels
+or SMOTE.
+If you want to emphasize minority label, then increase it drastically like 9 times.
+
+Linear Regression
+------------------
+1. SSE = some of squared errors, plain sum.
+
+Evaluating RM
+--------------
+single peak normal curve  of residuals is good
+multi peak means we missed something
+
+Residual plot - Estimate Price Vs Residual should not form a cone.
+Score model - returns df with predicted (Scored label) column
+
+Influential Point Vs leverage Point
+
+Type of plots to build for classification vs regression?
+
+Improving models
+----------------
+1. Feature selection
+simpler model - predict better does not overfit, generalize better; interpretable to humans; calculations are easy
+a) greedy backward selection - select all features and remove least important.
+b) greedy forward selection - converse of (a)
+
+Read R^2? - How well a model fits the  data?
+Close to 1 is good.
+Adjusted R^2 has penalty on number of features. It balances between R^2 gain and large number of features.
+
+Regularization
+--------------
+Sum of square of coefficients, minimize that. L2 regularization - Ridge
+Sum of absolute value of coefficients, minimize that, L1 regularization - lasso
+L2 tends to make coefficients smaller, L1 makes some 0
+
+Azure ML -
+
+Interpreting features
+-----------------------
+pitfall - collinear features mess up interpretation of features, don't go by magnitude
+Scaling can mess up features interpretation and also regularization
+
+Azure ML - 'Permutation based feature importance'
+can optimize on any metric like 'accuracy'
+Find important features, remove 0 coefficient manually.
+input - score model and train split of 'split data'
+
+Repeat, till you get no zero coefficient
+Make sure evaluate model is done every time you change.
+
+
+Sweeping Parameters (Same as grid search in SKlearn)
+-------------------
+Sweep entire grid(takes longer)/Random Sweep
+Azure ML-
+Replace 'Train Model' in regular setup with 'Tune Model Hyper Parameters'
+NOTE : you will have to split test set into two, and pass one to 'Tune Model' to help tune and other continues to score model.
+Also definition of model (logistic class) will need to be changed from single parameter to parameter range (values separated by commas)
+
+Cross Validation
+-----------------
+10 folds, train on 9 and test on 1 and repeat
+Azure ML -
+'Cross Validate' module, inputs untrained model and whole data, basically looking for if there is large variation in results.
+Verifying if the model is generalizing well.
+This is method of evaluation performance of a model
+
+Nested Cross validation is method of check best parameters for a model
+10 parts, 8 for training, 1 for validation, 1 for test
+
+
+Check outside source of azure ML example ****
+get parameter range for various models *****
+*******write down entire process*******
+
+
+Overall Process
+-----------------
+1. Load datasets, join them using 'join' module if need be.
+Visualize the dataset
+2. Any feature creation will have to be done in python.
+3. 'Clean missing data' can be used to remove take care of null values.
+  'Clean Missing Data' may have to be used twice one for numeric substitute with 0 and one for String, substitute with 'unknown'
+4.'Select columns in dataset' can be used to choose or exclude any columns, basically to remove id or irrelavent columns?
+5. Normalize data - zscore or min max, check 0 for constant columns
+Note - only real numeric fields
+6. Edit Metadata - to convert string to categorical.
+7. Visualize data, convert to CSV first before visualizing.
+a) For strings, conditioned bar plots for each class
+b) for numeric, box plot
+c) histogram can also be made.
+
+
+8. Building Classifier
+9. Split data, connect edit meta data, bypass export to csv.
+10. Add logistic regression connect to train model to which first split is also connected
+11. Score model connect output of train and second split
+Score model output will have the scored labels.
+12. Evaluate model after score model - this has ROC curve, accuracy etc.
+13. Feature selection - Trained Model and second split connect to 'permutation based feature selection'
+Add 'select columns' and remove 0 coefficient and repeat training process, till no 0 is left
+14. Regularization is alternative to feature selection, it reduces weights towards zero.
+One can manually change parameters and compare with older model, but tedious.
+15. Tuning model hyper parameters - this is basically replacing 'train model' with 'tune model hyper param'
+---Start this after reducing features from permutation
+This will need another split, to split test set further into two parts, one goes in tuning hyper parameters.
+hyper param - random sweep, model will also have to be set to parameter range.
+Visualize hyper param and get all parameters and train stand alone classifier on these parameters.
